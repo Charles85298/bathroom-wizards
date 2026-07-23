@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">Bathroom Wizards temporary logo</title>
+  <desc id="desc">A modern wizard hat over a stylized tile sparkle.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7d37a"/>
+      <stop offset="1" stop-color="#c8952e"/>
+    </linearGradient>
+    <linearGradient id="indigo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6f63ff"/>
+      <stop offset="1" stop-color="#2b236e"/>
+    </linearGradient>
+  </defs>
+  <circle cx="160" cy="160" r="148" fill="#12131a" stroke="url(#gold)" stroke-width="8"/>
+  <path d="M78 190c30-20 56-59 70-119 33 42 58 79 93 107-43-4-73 6-103 35-19-12-39-20-60-23z" fill="url(#indigo)" stroke="#f7d37a" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M64 204c56-18 127-14 193 8-43 25-139 31-193-8z" fill="url(#gold)"/>
+  <path d="M221 60l8 17 18 8-18 8-8 18-8-18-18-8 18-8 8-17z" fill="#fff5ce"/>
+  <path d="M91 104l5 11 12 5-12 5-5 12-5-12-12-5 12-5 5-11z" fill="#fff5ce"/>
+  <g transform="translate(107 219)">
+    <rect x="0" y="0" width="106" height="42" rx="8" fill="#1c1e27" stroke="#f7d37a" stroke-width="4"/>
+    <path d="M35 0v42M71 0v42M0 21h106" stroke="#f7d37a" stroke-width="3" opacity=".75"/>
+  </g>
+</svg>
