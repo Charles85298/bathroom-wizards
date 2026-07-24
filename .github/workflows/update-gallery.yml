@@ -1,0 +1,32 @@
+name: Update photo gallery
+
+on:
+  push:
+    paths:
+      - 'assets/gallery/**'
+      - 'generate-gallery.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-gallery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python generate-gallery.py
+      - name: Commit updated gallery manifest
+        run: |
+          if git diff --quiet gallery.json; then
+            echo "No gallery changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gallery.json
+          git commit -m "Update photo gallery [skip ci]"
+          git push
