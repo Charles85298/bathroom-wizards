@@ -1,125 +1,68 @@
-# Bathroom Wizards Website
+# Bathroom Wizards Website — Version 2.0
 
-A mobile-responsive, dark-themed portfolio site for **Bathroom Wizards**.
+A premium, mobile-responsive static portfolio website for Bathroom Wizards, ready for Cloudflare Workers Static Assets, Cloudflare Pages, or GitHub hosting.
 
-## Included
+## Version 2.0 features
 
-- Home page and service sections
-- Click-to-enlarge project gallery
+- Premium animated hero and loading screen
+- Updated wizard-and-water-drop SVG logo
+- Filterable, click-to-enlarge project gallery
 - Before/after comparison slider
-- Responsive mobile navigation
-- Phoenix-area map with an approximate 70-mile radius
-- Contact information and estimate form
-- Placeholder Google Reviews button
-- Temporary wizard logo in SVG format
-- SEO description, social sharing metadata, sitemap, and robots file
+- Quick-estimate modal using the existing Formspree endpoint
+- Main contact form using Formspree
+- Thumbtack trust stats and profile link
+- Google Reviews placeholder button
+- Interactive Phoenix map with an approximate 70-mile radius
+- Google Maps launch button
+- Mobile Call, Text, and Estimate controls
+- Local business structured data, canonical URL, Open Graph metadata, sitemap, and robots file
+- Reduced-motion accessibility support
 
-## Preview on your computer
+## Publish through GitHub and Cloudflare
 
-Open `index.html` in a browser. The map and Google Fonts require an internet connection.
+1. Extract this ZIP.
+2. Upload the contents of `bathroom-wizards-site` to the root of your GitHub repository.
+3. Commit the changes.
+4. Redeploy your Cloudflare Worker/Static Assets project, or let the Git-connected deployment run automatically.
+5. Test `https://bathroom-wizards.com` on desktop and mobile.
 
-For the most accurate preview, run a simple local server from the website folder:
+## Google Reviews URL
 
-```bash
-python -m http.server 8000
-```
+Open `index.html`, search for `#google-reviews-url`, and replace it with the final Google review/profile link. Remove `data-placeholder="true"` after inserting the live URL.
 
-Then visit `http://localhost:8000`.
+## Add gallery photos
 
-## Important setup before publishing
+1. Put optimized JPG or WebP files in `assets/images/`.
+2. Copy an existing `.gallery-card` block in `index.html`.
+3. Update the image path, caption, alt text, and `data-category`.
+4. Use one of: `tile`, `waterproofing`, or `remodeling`. Add another filter button if you create a new category.
 
-### 1. Activate the contact form
+## Contact forms
 
-This site uses Formspree because a plain static website cannot send email by itself.
+Both forms post to `https://formspree.io/f/mkodqjal`. Destination email settings are managed in Formspree.
 
-1. Create a free Formspree account.
-2. Create a new form and set the notification email to `Wayne.Trotter@bathroom-wizards.com`.
-3. Formspree gives you an endpoint similar to:
+## Important business claims
 
-   `https://formspree.io/f/abcdwxyz`
+The site intentionally does not state “licensed” or “insured.” Add those claims only when verified and currently applicable.
 
-4. Open `index.html`.
-5. Find:
+## Version 2.1 changes
+- Added three featured Thumbtack customer reviews.
+- Removed the interactive map and all Leaflet dependencies.
+- Retained the Phoenix-area service list with direct estimate and phone actions.
 
-   `https://formspree.io/f/mkodqjal`
+## Automatic photo carousel (Version 2.2)
 
-6. Replace it with your real endpoint.
-7. Remove `data-form-placeholder="true"` from the same `<form>` tag.
+The project gallery is now generated from the `assets/gallery` folder.
 
-Cloudflare also documents Formspree as a simple option for static HTML forms on Pages.
+### Easiest Windows workflow
+1. Copy new JPG, PNG, WebP, GIF, or AVIF pictures into `assets/gallery`.
+2. Give each file a descriptive name, such as `Gilbert-master-bath-remodel.jpg`.
+3. Double-click `update-gallery.bat`.
+4. Upload/deploy the complete website folder.
 
-### 2. Add the Google Reviews link
+The updater rebuilds `gallery.json`. The website reads that file and automatically creates the carousel, navigation arrows, dots, captions, autoplay, and full-size lightbox.
 
-1. Open your Google Business Profile.
-2. Copy the link that sends customers to your reviews/profile.
-3. Open `index.html`.
-4. Find:
+### GitHub automatic workflow
+If the website repository is connected to GitHub, the included `.github/workflows/update-gallery.yml` workflow regenerates and commits `gallery.json` whenever files are added to `assets/gallery`. Cloudflare can then redeploy the updated site from the repository.
 
-   `href="#google-reviews-url" data-placeholder="true"`
-
-5. Replace it with your complete Google URL and remove `data-placeholder="true"`.
-
-### 3. Add or replace photos
-
-Photos are stored in `assets/images/`.
-
-To replace an existing photo, use the same filename. To add a new gallery item, copy one of the `<button class="gallery-card">...</button>` blocks inside the `gallery-grid` section and update the image path, alt text, caption, and project title.
-
-For best speed, resize large photos to roughly 1800–2400 pixels on the longest edge and save them as optimized JPG or WebP files.
-
-## Upload to GitHub using the website
-
-1. Sign in to GitHub.
-2. Select **New repository**.
-3. Name it `bathroom-wizards-website`.
-4. Choose **Public** or **Private**. Cloudflare Pages can connect to either when authorization is granted.
-5. Create the repository without adding starter files.
-6. Open the repository and choose **Add file → Upload files**.
-7. Extract this ZIP first, then drag the **contents inside** the `bathroom-wizards-site` folder into GitHub. `index.html` must be at the repository root.
-8. Commit the files.
-
-GitHub's web uploader supports files up to 25 MiB each. The provided photos are below that threshold, but optimized photos are still recommended.
-
-## Publish with Cloudflare Pages
-
-1. Sign in to Cloudflare.
-2. Open **Workers & Pages**.
-3. Select **Create application** and choose **Pages**.
-4. Choose **Connect to Git**.
-5. Authorize GitHub and select `bathroom-wizards-website`.
-6. For build settings:
-   - Framework preset: **None**
-   - Build command: leave blank
-   - Build output directory: `/` or leave the default root option offered by Cloudflare
-7. Save and deploy.
-
-Cloudflare will publish the site to a temporary `pages.dev` address. With Git integration, future GitHub commits automatically trigger a new deployment.
-
-> Important: Cloudflare's current documentation notes that a Pages project created with Git integration cannot later be converted to Direct Upload. Create this site using **Connect to Git** from the beginning.
-
-## Connect Bathroom-wizards.com
-
-1. In the Cloudflare Pages project, open **Custom domains**.
-2. Select **Set up a custom domain**.
-3. Enter `bathroom-wizards.com`.
-4. Follow Cloudflare's DNS prompts.
-5. Add `www.bathroom-wizards.com` as a second custom domain if desired.
-6. Choose one version as the primary URL and redirect the other version to it using Cloudflare Redirect Rules if needed.
-
-For an apex/root domain such as `bathroom-wizards.com`, Cloudflare requires the domain to be in the same Cloudflare account as the Pages project.
-
-## Website files
-
-- `index.html` — page content and contact details
-- `styles.css` — design, layout, mobile responsiveness, and animations
-- `script.js` — menu, animations, gallery lightbox, slider, map, and form reminders
-- `assets/icons/wizard-logo.svg` — temporary logo
-- `assets/images/` — project photographs
-- `robots.txt` and `sitemap.xml` — search engine files
-
-## Business details currently included
-
-- Phone: 602-600-8820
-- Email: Wayne.Trotter@bathroom-wizards.com
-- Domain: Bathroom-wizards.com
-- Area: Phoenix Metro and surrounding communities
+Important: a static website cannot directly inspect a server folder in the browser. The included updater or GitHub workflow creates the small manifest that tells the carousel which photos exist.

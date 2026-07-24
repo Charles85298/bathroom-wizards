@@ -1,0 +1,19 @@
+{
+  "photos": [
+    {
+      "src": "assets/gallery/project-prep-room.jpg",
+      "alt": "Bathroom Wizards project: Project Prep Room",
+      "caption": "Project Prep Room"
+    },
+    {
+      "src": "assets/gallery/shower-waterproofing.jpg",
+      "alt": "Bathroom Wizards project: Shower Waterproofing",
+      "caption": "Shower Waterproofing"
+    },
+    {
+      "src": "assets/gallery/tub-tile-installation.jpg",
+      "alt": "Bathroom Wizards project: Tub Tile Installation",
+      "caption": "Tub Tile Installation"
+    }
+  ]
+}
