@@ -27,7 +27,8 @@ document.getElementById('year').textContent=new Date().getFullYear();
 // Version 2.0 interactions
 window.addEventListener('load',()=>{window.setTimeout(()=>document.querySelector('.site-loader')?.classList.add('loaded'),260)});
 
-// Auto-populated project carousel. gallery.json is generated from assets/gallery.
+// Version 3: the project carousel reads photos directly from a public GitHub repository.
+// Configure the repository once in gallery-config.js. No GitHub Action or gallery.json is needed.
 const galleryTrack=document.getElementById('gallery-track');
 const galleryDots=document.getElementById('gallery-dots');
 const galleryStatus=document.getElementById('gallery-status');
@@ -50,59 +51,104 @@ function showGallerySlide(index){
 
 function startGalleryAutoplay(){
   clearInterval(galleryTimer);
-  galleryTimer=setInterval(()=>showGallerySlide(galleryIndex+1),5000);
+  if(document.querySelectorAll('.carousel-slide').length>1){
+    galleryTimer=setInterval(()=>showGallerySlide(galleryIndex+1),5000);
+  }
+}
+
+function captionFromFilename(filename){
+  return filename
+    .replace(/\.[^.]+$/,'')
+    .replace(/^\d{4}[-_]?\d{2}[-_]?\d{2}[-_]?/,'')
+    .replace(/[-_]+/g,' ')
+    .replace(/\b\w/g,letter=>letter.toUpperCase())
+    .trim() || 'Bathroom Wizards Project';
+}
+
+function renderGallery(photos){
+  galleryTrack.innerHTML='';
+  galleryDots.innerHTML='';
+  photos.forEach((photo,index)=>{
+    const slide=document.createElement('button');
+    slide.type='button';
+    slide.className='carousel-slide';
+    slide.setAttribute('aria-label',`Open project photo ${index+1} of ${photos.length}`);
+
+    const image=document.createElement('img');
+    image.src=photo.src;
+    image.alt=photo.alt;
+    image.loading=index===0?'eager':'lazy';
+    image.decoding='async';
+
+    const caption=document.createElement('span');
+    caption.className='carousel-caption';
+    const title=document.createElement('strong');
+    title.textContent=photo.caption;
+    const helper=document.createElement('small');
+    helper.textContent='Click to enlarge';
+    caption.append(title,helper);
+
+    slide.append(image,caption);
+    slide.addEventListener('click',()=>{
+      if(!dialog||!dialogImg||!dialogText)return;
+      dialogImg.src=photo.src;
+      dialogImg.alt=photo.alt;
+      dialogText.textContent=photo.caption;
+      dialog.showModal();
+    });
+    galleryTrack.appendChild(slide);
+
+    const dot=document.createElement('button');
+    dot.type='button';
+    dot.className='carousel-dot';
+    dot.setAttribute('aria-label',`Show project photo ${index+1}`);
+    dot.addEventListener('click',()=>{showGallerySlide(index);startGalleryAutoplay();});
+    galleryDots.appendChild(dot);
+  });
+  galleryStatus.hidden=true;
+  showGallerySlide(0);
+  startGalleryAutoplay();
 }
 
 async function loadGallery(){
   if(!galleryTrack)return;
+  const config=window.BATHROOM_WIZARDS_GALLERY||{};
+  const missing=!config.owner||!config.repo||config.owner.includes('REPLACE_')||config.repo.includes('REPLACE_');
+  if(missing){
+    galleryStatus.textContent='Gallery setup is almost complete. Add your GitHub username and repository name to gallery-config.js.';
+    return;
+  }
+
+  const folder=String(config.folder||'assets/gallery').replace(/^\/+|\/+$/g,'');
+  const branch=encodeURIComponent(config.branch||'main');
+  const apiUrl=`https://api.github.com/repos/${encodeURIComponent(config.owner)}/${encodeURIComponent(config.repo)}/contents/${folder}?ref=${branch}`;
+  const imagePattern=/\.(avif|gif|jpe?g|png|webp)$/i;
+
   try{
-    const response=await fetch(`gallery.json?v=${Date.now()}`,{cache:'no-store'});
-    if(!response.ok)throw new Error('Gallery manifest not found');
-    const data=await response.json();
-    const photos=Array.isArray(data.photos)?data.photos:[];
-    if(!photos.length)throw new Error('No project photos are available yet');
-
-    galleryTrack.innerHTML='';
-    galleryDots.innerHTML='';
-    photos.forEach((photo,index)=>{
-      const slide=document.createElement('button');
-      slide.type='button';
-      slide.className='carousel-slide';
-      slide.setAttribute('aria-label',`Open project photo ${index+1} of ${photos.length}`);
-      slide.dataset.image=photo.src;
-      slide.dataset.caption=photo.caption||'';
-
-      const image=document.createElement('img');
-      image.src=photo.src;
-      image.alt=photo.alt||photo.caption||'Bathroom Wizards project photo';
-      image.loading=index===0?'eager':'lazy';
-
-      const caption=document.createElement('span');
-      caption.className='carousel-caption';
-      caption.innerHTML=`<strong>${photo.caption||'Bathroom Wizards Project'}</strong><small>Click to enlarge</small>`;
-      slide.append(image,caption);
-      slide.addEventListener('click',()=>{
-        if(!dialog||!dialogImg||!dialogText)return;
-        dialogImg.src=photo.src;
-        dialogImg.alt=image.alt;
-        dialogText.textContent=photo.caption||'';
-        dialog.showModal();
-      });
-      galleryTrack.appendChild(slide);
-
-      const dot=document.createElement('button');
-      dot.type='button';
-      dot.className='carousel-dot';
-      dot.setAttribute('aria-label',`Show project photo ${index+1}`);
-      dot.addEventListener('click',()=>{showGallerySlide(index);startGalleryAutoplay();});
-      galleryDots.appendChild(dot);
+    const response=await fetch(apiUrl,{
+      headers:{Accept:'application/vnd.github+json'},
+      cache:'no-store'
     });
-    galleryStatus.hidden=true;
-    showGallerySlide(0);
-    if(photos.length>1)startGalleryAutoplay();
+    if(!response.ok){
+      if(response.status===404)throw new Error('Repository or gallery folder was not found. Confirm the repository is public and gallery-config.js is correct.');
+      if(response.status===403)throw new Error('GitHub temporarily limited gallery requests. Please refresh again in a few minutes.');
+      throw new Error(`GitHub returned status ${response.status}.`);
+    }
+    const entries=await response.json();
+    const photos=(Array.isArray(entries)?entries:[])
+      .filter(item=>item.type==='file'&&imagePattern.test(item.name)&&item.download_url)
+      .sort((a,b)=>b.name.localeCompare(a.name,undefined,{numeric:true,sensitivity:'base'}))
+      .map(item=>{
+        const caption=captionFromFilename(item.name);
+        return {src:item.download_url,caption,alt:`Bathroom Wizards project: ${caption}`};
+      });
+
+    if(!photos.length)throw new Error(`No supported photos were found in ${folder}.`);
+    renderGallery(photos);
   }catch(error){
-    galleryStatus.textContent='Project photos are being updated. Please check back soon.';
-    console.error(error);
+    galleryStatus.hidden=false;
+    galleryStatus.textContent=error.message||'Project photos could not be loaded right now.';
+    console.error('Bathroom Wizards gallery:',error);
   }
 }
 

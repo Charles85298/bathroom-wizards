@@ -1,68 +1,43 @@
-# Bathroom Wizards Website — Version 2.0
+# Bathroom Wizards Website — Version 3.0
 
-A premium, mobile-responsive static portfolio website for Bathroom Wizards, ready for Cloudflare Workers Static Assets, Cloudflare Pages, or GitHub hosting.
+Version 3 loads carousel photos directly from a public GitHub repository. It does not use a GitHub Action, `.github` workflow, `gallery.json`, Python, or a Windows batch file.
 
-## Version 2.0 features
+## One-time setup
 
-- Premium animated hero and loading screen
-- Updated wizard-and-water-drop SVG logo
-- Filterable, click-to-enlarge project gallery
-- Before/after comparison slider
-- Quick-estimate modal using the existing Formspree endpoint
-- Main contact form using Formspree
-- Thumbtack trust stats and profile link
-- Google Reviews placeholder button
-- Interactive Phoenix map with an approximate 70-mile radius
-- Google Maps launch button
-- Mobile Call, Text, and Estimate controls
-- Local business structured data, canonical URL, Open Graph metadata, sitemap, and robots file
-- Reduced-motion accessibility support
+Open `gallery-config.js` and replace these two values:
 
-## Publish through GitHub and Cloudflare
+```js
+owner: "REPLACE_WITH_GITHUB_USERNAME",
+repo: "REPLACE_WITH_REPOSITORY_NAME",
+```
 
-1. Extract this ZIP.
-2. Upload the contents of `bathroom-wizards-site` to the root of your GitHub repository.
-3. Commit the changes.
-4. Redeploy your Cloudflare Worker/Static Assets project, or let the Git-connected deployment run automatically.
-5. Test `https://bathroom-wizards.com` on desktop and mobile.
+Example:
 
-## Google Reviews URL
+```js
+owner: "wayne-trotter",
+repo: "bathroom-wizards",
+```
 
-Open `index.html`, search for `#google-reviews-url`, and replace it with the final Google review/profile link. Remove `data-placeholder="true"` after inserting the live URL.
+Keep `branch: "main"` unless your website uses a different branch. Keep `folder: "assets/gallery"` unless you intentionally store the photos elsewhere.
 
-## Add gallery photos
+The GitHub repository must be public because the website reads the public GitHub Contents API without a password or token.
 
-1. Put optimized JPG or WebP files in `assets/images/`.
-2. Copy an existing `.gallery-card` block in `index.html`.
-3. Update the image path, caption, alt text, and `data-category`.
-4. Use one of: `tile`, `waterproofing`, or `remodeling`. Add another filter button if you create a new category.
+## Add photos later
 
-## Contact forms
+1. Open `assets/gallery` in the GitHub repository.
+2. Select **Add file → Upload files**.
+3. Upload JPG, JPEG, PNG, WEBP, GIF, or AVIF images.
+4. Commit the upload.
+5. Wait for Cloudflare to deploy, then refresh the website.
 
-Both forms post to `https://formspree.io/f/mkodqjal`. Destination email settings are managed in Formspree.
+The carousel automatically detects every supported image in that folder. It creates captions from filenames and sorts filenames in descending order. Date-prefixed filenames work well, such as:
 
-## Important business claims
+- `2026-07-24-phoenix-guest-bath.jpg`
+- `2026-07-20-custom-tile-shower.jpg`
+- `2026-06-25-kitchen-hood-install.jpg`
 
-The site intentionally does not state “licensed” or “insured.” Add those claims only when verified and currently applicable.
+## Important
 
-## Version 2.1 changes
-- Added three featured Thumbtack customer reviews.
-- Removed the interactive map and all Leaflet dependencies.
-- Retained the Phoenix-area service list with direct estimate and phone actions.
-
-## Automatic photo carousel (Version 2.2)
-
-The project gallery is now generated from the `assets/gallery` folder.
-
-### Easiest Windows workflow
-1. Copy new JPG, PNG, WebP, GIF, or AVIF pictures into `assets/gallery`.
-2. Give each file a descriptive name, such as `Gilbert-master-bath-remodel.jpg`.
-3. Double-click `update-gallery.bat`.
-4. Upload/deploy the complete website folder.
-
-The updater rebuilds `gallery.json`. The website reads that file and automatically creates the carousel, navigation arrows, dots, captions, autoplay, and full-size lightbox.
-
-### GitHub automatic workflow
-If the website repository is connected to GitHub, the included `.github/workflows/update-gallery.yml` workflow regenerates and commits `gallery.json` whenever files are added to `assets/gallery`. Cloudflare can then redeploy the updated site from the repository.
-
-Important: a static website cannot directly inspect a server folder in the browser. The included updater or GitHub workflow creates the small manifest that tells the carousel which photos exist.
+- Do not restore `update-gallery.yml`; Version 3 does not need it.
+- Do not create or update `gallery.json`; Version 3 does not read it.
+- GitHub may temporarily limit anonymous API requests if the same internet connection refreshes the page many times in one hour. Normal customer traffic should generally be fine, but a Cloudflare API proxy would be the next upgrade for a high-traffic site.
