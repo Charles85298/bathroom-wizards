@@ -1,43 +1,60 @@
-# Bathroom Wizards Website — Version 3.0
+# pro-it-help.com portfolio website
 
-Version 3 loads carousel photos directly from a public GitHub repository. It does not use a GitHub Action, `.github` workflow, `gallery.json`, Python, or a Windows batch file.
+Static website for Charles Fleming, ready for GitHub and Cloudflare Pages.
 
-## One-time setup
+## Upload to GitHub
+1. Create or open the GitHub repository named `pro-it-help`.
+2. Upload everything in this folder to the root of the repository.
+3. Commit the files to the `main` branch.
 
-Open `gallery-config.js` and replace these two values:
+## Configure the automatic GitHub photography gallery
+1. Open `assets/js/gallery-config.js`.
+2. Replace `YOUR_GITHUB_USERNAME` with your exact GitHub username.
+3. Confirm the repository is `pro-it-help` and the branch is `main`.
+4. Keep the repository public so browser visitors can use the GitHub Contents API without a private access token.
+5. Commit and push the updated file.
 
-```js
-owner: "REPLACE_WITH_GITHUB_USERNAME",
-repo: "REPLACE_WITH_REPOSITORY_NAME",
-```
+The gallery reads photographs automatically from these folders:
 
-Example:
+- `assets/images/photography/arizona-landscapes/`
+- `assets/images/photography/people/`
+- `assets/images/photography/animals/`
+- `assets/images/photography/architecture/`
+- `assets/images/photography/nature-detail/`
+- `assets/images/photography/night-photography/`
+- `assets/images/photography/travel-places/`
+- `assets/images/photography/transportation/`
 
-```js
-owner: "wayne-trotter",
-repo: "bathroom-wizards",
-```
+To add photographs:
+1. Upload the image to the correct category folder.
+2. Commit the upload to GitHub.
+3. Refresh the gallery page after GitHub and Cloudflare finish publishing.
 
-Keep `branch: "main"` unless your website uses a different branch. Keep `folder: "assets/gallery"` unless you intentionally store the photos elsewhere.
+Supported formats are JPG, JPEG, PNG, WebP, GIF, and AVIF. Filenames are automatically converted into captions. For example, `sedona-sunset.jpg` displays as `Sedona Sunset`.
 
-The GitHub repository must be public because the website reads the public GitHub Contents API without a password or token.
+No filenames need to be added to JavaScript. Placeholder SVG files, README files, and non-image files are ignored.
 
-## Add photos later
+## Connect Cloudflare Pages
+1. Cloudflare Dashboard -> Workers & Pages.
+2. Create application -> Pages -> Connect to Git.
+3. Select the GitHub repository.
+4. Framework preset: `None`.
+5. Build command: leave blank.
+6. Build output directory: `/` or the repository root.
+7. Deploy.
 
-1. Open `assets/gallery` in the GitHub repository.
-2. Select **Add file → Upload files**.
-3. Upload JPG, JPEG, PNG, WEBP, GIF, or AVIF images.
-4. Commit the upload.
-5. Wait for Cloudflare to deploy, then refresh the website.
+## Custom domain
+In the Cloudflare Pages project, open Custom Domains and add:
+- `pro-it-help.com`
+- `www.pro-it-help.com`
 
-The carousel automatically detects every supported image in that folder. It creates captions from filenames and sorts filenames in descending order. Date-prefixed filenames work well, such as:
+Let Cloudflare create the website DNS records. Keep existing MX, SPF, DKIM, DMARC, Microsoft, and Zoho verification records.
 
-- `2026-07-24-phoenix-guest-bath.jpg`
-- `2026-07-20-custom-tile-shower.jpg`
-- `2026-06-25-kitchen-hood-install.jpg`
+## Update AI project links
+Open `ai-projects.html`. Replace `href="#"` placeholders with GitHub, live demo, architecture, and case-study links.
 
-## Important
+## Update the logo
+Replace `assets/images/cf-logo.png` with a newer logo using the same filename.
 
-- Do not restore `update-gallery.yml`; Version 3 does not need it.
-- Do not create or update `gallery.json`; Version 3 does not read it.
-- GitHub may temporarily limit anonymous API requests if the same internet connection refreshes the page many times in one hour. Normal customer traffic should generally be fine, but a Cloudflare API proxy would be the next upgrade for a high-traffic site.
+## Resume
+The downloadable resume is stored at `assets/docs/Charles-Fleming-Resume-2024.docx`.
